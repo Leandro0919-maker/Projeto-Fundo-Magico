@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoading(true); // Começa carregamento antes de enviar
 
         try {
-            const response = await fetch("https://leandro0919.app.n8n.cloud/webhook-test/ce946dd2-7d81-4593-a6ed-d0750b58ae5c", { 
+           
+            const response = await fetch("http://localhost:3000/gerar-fundo", { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -32,17 +33,30 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlCode.textContent = result.code;
             cssCode.textContent = result.style;
             
+            // Aqui aplicamos a mágica na tela
+            const previewContainer = document.createElement('div');
+            previewContainer.innerHTML = result.code;
+            
+            const styleTag = document.createElement('style');
+            styleTag.textContent = result.style;
+            
+            preview.innerHTML = ''; // Limpa a pré-visualização anterior
+            preview.appendChild(previewContainer);
+            preview.appendChild(styleTag);
             preview.style.display = 'block';
-            preview.innerHTML = result.code;
-
+            
+            // O código abaixo para injetar o estilo no <head> também funciona,
+            // mas colocar direto na área de preview é mais contido.
+            /*
             let styleTag = document.getElementById('dynamic-style');
-            if (!styleTag) styleTag.remove();
+            if (styleTag) styleTag.remove();
             if (result.style) {
                 styleTag = document.createElement('style');
                 styleTag.id = 'dynamic-style';
                 styleTag.textContent = result.style;
                 document.head.appendChild(styleTag);
             }
+            */
 
         } catch (error) {
             console.error('Erro ao gerar o background:', error);
@@ -54,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function setLoading(isLoading) {
+        btn.disabled = isLoading; // Desativa o botão enquanto gera
         btn.innerHTML = isLoading ? 'Gerando...' : 'Gerar Background';
     }
 
